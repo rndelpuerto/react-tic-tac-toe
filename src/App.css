@@ -11,7 +11,7 @@
 .game__status{
   width: 45vw;
   min-width: 320px;
-  max-width: 480px;
+  max-width: 580px;
   padding: 0 0 1rem 0;
 }
 
@@ -20,11 +20,17 @@
   justify-content: center;
   width: 45vw;
   min-width: 320px;
-  max-width: 480px;
+  max-width: 580px;
   /*height: 45vw;*/
   height: auto;
   min-height: 320px;
   /*max-height: 480px;*/
+}
+
+@media (min-width: 480px) {
+  .game__board  {
+      /*min-width: 480px;*/
+  }
 }
 
 
