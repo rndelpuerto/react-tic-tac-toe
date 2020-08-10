@@ -103,8 +103,10 @@ function App() {
   useEffect(() => {
     if (checkGame()) {
       alert("The winner is " + playerSymbols[gameState.currentPlayer] + "!");
+
       const newScore = { ...gameState.score };
       newScore[gameState.currentPlayer ? "player1" : "player2"]++;
+      
       setGameState({
         ...gameState,
         score: newScore,
