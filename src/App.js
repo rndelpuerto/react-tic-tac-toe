@@ -114,11 +114,11 @@ function App() {
         games: gameState.games + 1,
       });
 
-      setBoardState(initBoardState);
+      setBoardState(() => initBoardState);
     } else if (!boardState.some((elem) => elem === null)) {
       alert("Draw!");
       setGameState({ ...gameState, games: gameState.games + 1 });
-      setBoardState(initBoardState);
+      setBoardState(() => initBoardState);
     } else setGameState({ ...gameState, currentPlayer: getNextPlayer() });
   }, [boardState]);
 
