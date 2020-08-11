@@ -1,62 +1,57 @@
 .square {
+  min-height: 12vw;
   border: 0 none;
   font-size: 20vw;
   text-align: center;
   color: #f1f1f1b0;
-  text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.3);
   background-color: rgba(0, 0, 0, 0.2);
+  text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.3);
   cursor: pointer;
-  min-height: 12vw;
 }
-
 .square:hover {
   background-color: rgba(0, 0, 0, 0.3);
 }
-
 .square:disabled {
   background-color: rgba(0, 0, 0, 0.4);
 }
-
 .player-symbol {
   display: block;
 }
 
 .square:disabled .player-symbol {
-  -webkit-animation: flip-horizontal-bottom 0.4s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
-	        animation: flip-horizontal-bottom 0.4s cubic-bezier(0.455, 0.030, 0.515, 0.955) both;
+  -webkit-animation: flip 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955) both;
+  animation: flip 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955) both;
 }
 
 @media (min-width: 540px) {
   .square {
     font-size: 12vw;
-}
+  }
 }
 
 @media (min-width: 680px) {
   .square {
-      font-size: 10vw;
+    font-size: 10vw;
   }
 }
 
-
-
-@-webkit-keyframes flip-horizontal-bottom {
+@-webkit-keyframes flip {
   0% {
     -webkit-transform: rotateX(0);
-            transform: rotateX(0);
+    transform: rotateX(0);
   }
   100% {
     -webkit-transform: rotateX(-180deg);
-            transform: rotateX(-180deg);
+    transform: rotateX(-180deg);
   }
 }
-@keyframes flip-horizontal-bottom {
+@keyframes flip {
   0% {
     -webkit-transform: rotateX(0);
-            transform: rotateX(0);
+    transform: rotateX(0);
   }
   100% {
     -webkit-transform: rotateX(-180deg);
-            transform: rotateX(-180deg);
+    transform: rotateX(-180deg);
   }
 }

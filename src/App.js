@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
+
 import StatusBar from "./components/StatusBar";
 import Board from "./components/Board";
 
@@ -12,7 +13,7 @@ function App() {
   const initBoardState = [null, null, null, null, null, null, null, null, null];
 
   const initGameState = {
-    currentPlayer: Math.floor(Math.random()),
+    currentPlayer: Math.round(Math.random()),
     score: { player1: 0, player2: 0 },
     games: 0,
   };
@@ -32,7 +33,7 @@ function App() {
 
     while (i < 3) {
       if (
-        boardState[cellIndex(i, j)] !== null &&
+        boardState[cellIndex(i, j)] &&
         boardState[cellIndex(i, j)] === boardState[cellIndex(i, j - 1)]
       ) {
         occurrences++;
@@ -58,7 +59,7 @@ function App() {
 
     while (j < 3) {
       if (
-        boardState[cellIndex(i, j)] !== null &&
+        boardState[cellIndex(i, j)] &&
         boardState[cellIndex(i, j)] === boardState[cellIndex(i - 1, j)]
       ) {
         occurrences++;
@@ -79,10 +80,10 @@ function App() {
 
   const checkDiags = () => {
     return (
-      (boardState[0] !== null &&
+      (boardState[0] &&
         boardState[0] === boardState[4] &&
         boardState[4] === boardState[8]) ||
-      (boardState[2] !== null &&
+      (boardState[2] &&
         boardState[2] === boardState[4] &&
         boardState[4] === boardState[6])
     );
@@ -102,18 +103,19 @@ function App() {
 
   useEffect(() => {
     if (checkGame()) {
-      alert("The winner is " + playerSymbols[gameState.currentPlayer] + "!");
+      alert(`The winner is ${playerSymbols[gameState.currentPlayer]}!`);
 
       const newScore = { ...gameState.score };
       newScore[gameState.currentPlayer ? "player1" : "player2"]++;
-      
+
       setGameState({
         ...gameState,
         score: newScore,
         games: gameState.games + 1,
       });
+
       setBoardState(initBoardState);
-    } else if (boardState.findIndex((i) => i === null) === -1) {
+    } else if (!boardState.some((elem) => elem === null)) {
       alert("Draw!");
       setGameState({ ...gameState, games: gameState.games + 1 });
       setBoardState(initBoardState);

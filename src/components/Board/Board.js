@@ -1,5 +1,6 @@
 import React from "react";
 import "./style.css";
+
 import Square from "../Square";
 
 export default function Board({ state, onClick }) {

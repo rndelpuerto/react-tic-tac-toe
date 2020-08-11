@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "./style.css";
 
 export default function Square({ index, children, onClick }) {
@@ -6,7 +6,7 @@ export default function Square({ index, children, onClick }) {
     <button
       className="square"
       onClick={() => onClick(index)}
-      disabled={children !== null ? "disabled" : ""}
+      disabled={!!children ? "disabled" : ""}
     >
       <span className="player-symbol noselect">{children}</span>
     </button>
