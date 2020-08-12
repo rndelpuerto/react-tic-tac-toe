@@ -1,26 +1,72 @@
-import React, { useState, useEffect } from "react";
+import React, { useReducer, useEffect } from "react";
 import "./App.css";
 
 import StatusBar from "./components/StatusBar";
 import Board from "./components/Board";
 
+const PLAYER_1 = "X";
+const PLAYER_2 = "O";
+
+const playerSymbols = [PLAYER_1, PLAYER_2];
+
+const initBoardState = [null, null, null, null, null, null, null, null, null];
+
+const initGameState = {
+  board: initBoardState,
+  currentPlayer: Math.round(Math.random()),
+  score: { player1: 0, player2: 0 },
+  games: 0,
+};
+
+const ActionType = {
+  SET_NEXT_PLAYER: "SET_NEXT_PLAYER",
+  UPDATE_BOARD: "UPDATE_BOARD",
+  UPDATE_GAME: "UPDATE_GAME",
+  RESET_GAME: "RESET_GAME",
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case ActionType.SET_NEXT_PLAYER:
+      return {
+        ...state,
+        currentPlayer: state.currentPlayer ? 0 : 1,
+      };
+
+    case ActionType.UPDATE_BOARD:
+      const newBoardState = [...state.board];
+      newBoardState[action.cellIndex] = playerSymbols[state.currentPlayer];
+
+      return {
+        ...state,
+        board: newBoardState,
+      };
+
+    case ActionType.UPDATE_GAME:
+      let newScore;
+
+      if (!action.draw) {
+        newScore = { ...state.score };
+        newScore[state.currentPlayer ? "player1" : "player2"]++;
+      } else newScore = state.score;
+
+      return {
+        ...state,
+        board: initBoardState,
+        score: newScore,
+        games: state.games + 1,
+      };
+
+    case ActionType.RESET_GAME:
+      return initGameState;
+
+    default:
+      return state;
+  }
+};
+
 function App() {
-  const PLAYER_1 = "X";
-  const PLAYER_2 = "O";
-
-  const playerSymbols = [PLAYER_1, PLAYER_2];
-
-  const initBoardState = [null, null, null, null, null, null, null, null, null];
-
-  const initGameState = {
-    currentPlayer: Math.round(Math.random()),
-    score: { player1: 0, player2: 0 },
-    games: 0,
-  };
-
-  const [boardState, setBoardState] = useState(initBoardState);
-
-  const [gameState, setGameState] = useState(initGameState);
+  const [gameState, dispatch] = useReducer(reducer, initGameState);
 
   const cellIndex = (i, j) => {
     return i * 3 + j;
@@ -31,10 +77,12 @@ function App() {
     let i = 0;
     let j = 1;
 
+    const { board } = gameState;
+
     while (i < 3) {
       if (
-        boardState[cellIndex(i, j)] &&
-        boardState[cellIndex(i, j)] === boardState[cellIndex(i, j - 1)]
+        board[cellIndex(i, j)] &&
+        board[cellIndex(i, j)] === board[cellIndex(i, j - 1)]
       ) {
         occurrences++;
         if (occurrences === 3) return true;
@@ -57,10 +105,12 @@ function App() {
     let i = 1;
     let j = 0;
 
+    const { board } = gameState;
+
     while (j < 3) {
       if (
-        boardState[cellIndex(i, j)] &&
-        boardState[cellIndex(i, j)] === boardState[cellIndex(i - 1, j)]
+        board[cellIndex(i, j)] &&
+        board[cellIndex(i, j)] === board[cellIndex(i - 1, j)]
       ) {
         occurrences++;
         if (occurrences === 3) return true;
@@ -79,13 +129,10 @@ function App() {
   };
 
   const checkDiags = () => {
+    const { board } = gameState;
     return (
-      (boardState[0] &&
-        boardState[0] === boardState[4] &&
-        boardState[4] === boardState[8]) ||
-      (boardState[2] &&
-        boardState[2] === boardState[4] &&
-        boardState[4] === boardState[6])
+      (board[0] && board[0] === board[4] && board[4] === board[8]) ||
+      (board[2] && board[2] === board[4] && board[4] === board[6])
     );
   };
 
@@ -93,34 +140,19 @@ function App() {
     return checkRows() || checkCols() || checkDiags();
   };
 
-  const getNextPlayer = () => (gameState.currentPlayer ? 0 : 1);
-
   const handlePlay = (cellIndex) => {
-    const newBoardState = [...boardState];
-    newBoardState[cellIndex] = playerSymbols[gameState.currentPlayer];
-    setBoardState(newBoardState);
+    dispatch({ type: ActionType.UPDATE_BOARD, cellIndex });
   };
 
   useEffect(() => {
     if (checkGame()) {
       alert(`The winner is ${playerSymbols[gameState.currentPlayer]}!`);
-
-      const newScore = { ...gameState.score };
-      newScore[gameState.currentPlayer ? "player1" : "player2"]++;
-
-      setGameState({
-        ...gameState,
-        score: newScore,
-        games: gameState.games + 1,
-      });
-
-      setBoardState(() => initBoardState);
-    } else if (!boardState.some((elem) => elem === null)) {
+      dispatch({ type: ActionType.UPDATE_GAME, draw: false });
+    } else if (!gameState.board.some((elem) => elem === null)) {
       alert("Draw!");
-      setGameState({ ...gameState, games: gameState.games + 1 });
-      setBoardState(() => initBoardState);
-    } else setGameState({ ...gameState, currentPlayer: getNextPlayer() });
-  }, [boardState]);
+      dispatch({ type: ActionType.UPDATE_GAME, draw: true });
+    } else dispatch({ type: ActionType.SET_NEXT_PLAYER });
+  }, [gameState.board]);
 
   return (
     <div className="game">
@@ -128,7 +160,7 @@ function App() {
         <StatusBar gameStatus={gameState} />
       </div>
       <div className="game__board">
-        <Board state={boardState} onClick={handlePlay} />
+        <Board state={gameState.board} onClick={handlePlay} />
       </div>
     </div>
   );
